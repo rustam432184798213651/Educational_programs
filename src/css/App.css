@@ -5,11 +5,12 @@
   text-indent: 4ch;
   background-color: dodgerblue;
   color: white;
-  font-family: 'Times New Roman', Times, serif;
 }
+
 
 .App {
   height: 94vh;
+  font-family: 'Times New Roman', Times, serif;
 }
 
 
