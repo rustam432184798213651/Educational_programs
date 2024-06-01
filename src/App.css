@@ -1,4 +1,20 @@
+#topPanel {
+  height: 6vh;
+  padding-top: 2vh;
+  border: 3px solid red;
+  font-size: 12pt;
+  text-indent: 4ch;
+  background-color: dodgerblue;
+  color: white;
+  font-family: 'Times New Roman', Times, serif;
+}
+
 .App {
+  height: 94vh;
+}
+
+
+/* .App {
   text-align: center;
 }
 
@@ -35,4 +51,4 @@
   to {
     transform: rotate(360deg);
   }
-}
+} */
