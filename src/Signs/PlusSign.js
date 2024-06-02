@@ -1,4 +1,4 @@
-import './css/PlusSign.css'
+import './../css/PlusSign.css'
 import { GrAdd } from "react-icons/gr";
 
 function PlusSign() {

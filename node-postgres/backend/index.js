@@ -14,13 +14,24 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.get('/getAllEducationalPrograms', (req, res) => {
+app.get('/getAllPrograms', (req, res) => {
   postgre.executeQuery("SELECT * FROM EducationalPrograms").then(response => {
     res.status(200).send(response);
   })
   .catch(error => {
     res.status(500).send(error);
   });
+})
+
+app.get('/getAllDisciplinesByProgramName/:ProgramName', (req, res) => {
+  const ProgramName = "'" + req.params.ProgramName + "'";
+  const query = "SELECT D.name FROM DisciplinesIdToEducationalProgramId AS DTEP JOIN EducationalPrograms AS EP ON DTEP.educationalProgramId = EP.id JOIN Disciplines AS D ON DTEP.disciplineId = D.id WHERE EP.name = " + ProgramName + ";";
+  postgre.executeQuery(query).then(response => {
+    res.status(200).send(response);
+  })
+  .catch(error => {
+    res.status(500).send(error);
+  })
 })
 
 
