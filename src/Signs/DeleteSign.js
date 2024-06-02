@@ -6,7 +6,7 @@ export default function DeleteSign() {
     }
     return (
         <>
-           <button id="DeleteSign"> <RiDeleteBin5Line /> </button>
+           <button id="DeleteSign" onClick={handler}> <RiDeleteBin5Line /> </button>
         </>
     );
 }

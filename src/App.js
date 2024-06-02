@@ -3,23 +3,54 @@ import SearchAndDeleteTab from './SearchAndDeleteTab'
 import {useState, useEffect} from 'react';
 import { AiOutlineArrowDown } from "react-icons/ai";
 
+const localhost = 'http://localhost:3001'
+
+function MyJsonParser(data) {
+  return JSON.stringify(data).slice(2, -2).split(",").map(el => {
+    let parsed = JSON.parse("\"" + el + "\"");
+    return parsed.slice(parsed.lastIndexOf(":") + 2, -2);
+  });
+}
+
+function AddLabWorks({program, discipline}) {
+  const [labWorks, setLabWorks] = useState(false);
+  function getLabWorksToDisciplineAndProgram(program, discipline) {
+    fetch(localhost + '/getAllLabWorksByProgramAndDisciplineNames/' + program + '/' + discipline)
+    .then(response => {
+      return response.text();
+    })
+    .then(data => {
+      let arr = MyJsonParser(data);
+      setLabWorks(arr.map((element, i) => (
+      <div contentEditable="true"> {element} </div>
+      )));
+    })
+  }
+  useEffect(() => {
+    getLabWorksToDisciplineAndProgram(program, discipline)
+  }, []);
+  return (
+    <>
+      <div style={{display: "inline"}} contentEditable="true"> {discipline} </div>
+      <ul className="labWorkList">
+          {labWorks}
+      </ul>
+    </>
+  )
+}
 
 function AddDisciplines({element, i}) {
   const [disciplines, setDisciplines] = useState(false);
   function getDisciplinesToProgram(program) {
-    console.log(program);
-    fetch('http://localhost:3001/getAllDisciplinesByProgramName/' + program)
+    fetch(localhost + '/getAllDisciplinesByProgramName/' + program)
       .then(response => {
         return response.text();
       })
       .then(data => {
-        let arr = JSON.stringify(data).slice(2, -2).split(",").map(el => {
-          let parsed = JSON.parse("\"" + el + "\"");
-          return parsed.slice(parsed.lastIndexOf(":") + 2, -2);
-        });
+        let arr = MyJsonParser(data);
         setDisciplines(arr.map((element, i) => (
           <ul key={i} style = {{listStyle: "None", paddingLeft: "2vw"}}>
-           <button style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button> <div style={{display: "inline"}} contentEditable="true"> {element} </div>
+           <button style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button>  <AddLabWorks program={program} discipline={element}/>
           </ul>
         )));
       })
@@ -45,7 +76,7 @@ function App() {
 
   function getAllPrograms() {
 
-    fetch('http://localhost:3001/getAllPrograms')
+    fetch(localhost + '/getAllPrograms')
       .then(response => {
         return response.text();
       })
