@@ -22,7 +22,7 @@ function AddLabWorks({program, discipline}) {
     .then(data => {
       let arr = MyJsonParser(data);
       setLabWorks(arr.map((element, i) => (
-      <div contentEditable="true"> {element} </div>
+      <div style={{width: "10vw"}}> {element} </div>
       )));
     })
   }
@@ -32,7 +32,7 @@ function AddLabWorks({program, discipline}) {
   return (
     <>
       <div style={{display: "inline"}} contentEditable="true"> {discipline} </div>
-      <ul className="labWorkList">
+      <ul id={"labWorks" + program + discipline} style={{display:"none"}}>
           {labWorks}
       </ul>
     </>
@@ -42,15 +42,19 @@ function AddLabWorks({program, discipline}) {
 function AddDisciplines({element, i}) {
   const [disciplines, setDisciplines] = useState(false);
   function getDisciplinesToProgram(program) {
+    function handler(e, program, discipline) {
+      let tag = document.getElementById("labWorks" + program + discipline);
+      tag.style.display = tag.style.display == "none" ?  "block" : "none"; 
+    }
     fetch(localhost + '/getAllDisciplinesByProgramName/' + program)
       .then(response => {
         return response.text();
       })
       .then(data => {
         let arr = MyJsonParser(data);
-        setDisciplines(arr.map((element, i) => (
+        setDisciplines(arr.map((discipline, i) => (
           <ul key={i} style = {{listStyle: "None", paddingLeft: "2vw"}}>
-           <button style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button>  <AddLabWorks program={program} discipline={element}/>
+           <button onClick={e => handler(e, program, discipline)} style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button>  <AddLabWorks program={program} discipline={discipline}/>
           </ul>
         )));
       })
