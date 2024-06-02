@@ -5,7 +5,7 @@ export default function SearchAndDeleteTab() {
    
     return (
         <div id="SearchAndDeleteTab">
-          <div style={{float: "left", color:"white", fontFamily: "inherit"}}>Databases</div>  <DeleteSign/> <PlusSign /> 
+          <div style={{float: "left", color:"white", fontFamily: "inherit"}}>Databases</div>  <DeleteSign/> <PlusSign />
         </div>
     )
 }

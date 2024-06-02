@@ -6,6 +6,8 @@ import { AiOutlineArrowDown } from "react-icons/ai";
 function App() {
   const [programs, setPrograms] = useState(false);
 
+  
+
   function getAllPrograms() {
     fetch('http://localhost:3001/getAllEducationalPrograms')
       .then(response => {
@@ -33,7 +35,7 @@ function App() {
 
         setPrograms(arr.map((element, i) => (
           <ul key={i} style = {{listStyle: "None", paddingLeft: "0"}}>
-           <button style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button> {element}   
+           <button ondblclick="handleDoubleClick" style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button> <div contentEditable="true" id={"div" + i} className="listOfPrograms" style={{display: "inline"}}>{element}</div>
           </ul>
         )));
         //setPrograms(arr);
@@ -46,7 +48,7 @@ function App() {
     <div className='App' stlye={{height: "100vh"}}>
       <div id="topPanel">  Educational programs </div>
       <SearchAndDeleteTab />
-      <ul style = {{listStyle: "None", paddingLeft: "0"}}>
+      <ul id="mainList" style = {{listStyle: "None", paddingLeft: "0"}}>
         {programs}
       </ul>
     </div>
