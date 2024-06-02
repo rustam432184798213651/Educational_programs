@@ -31,7 +31,7 @@ function AddDisciplines({element, i}) {
   return (
     <>
     <div contentEditable="true" value={"div" + i} className="listOfPrograms" style={{display: "inline"}}>{element}</div>
-    <ul className="disciplineList" style = {{listStyle: "None", paddingLeft: "0"}}>
+    <ul id={ element + "Disciplines"} className="disciplineList" style = {{listStyle: "None", paddingLeft: "0", display:"none"}}>
        {disciplines}
      </ul>
     </>
@@ -44,6 +44,7 @@ function App() {
   
 
   function getAllPrograms() {
+
     fetch('http://localhost:3001/getAllPrograms')
       .then(response => {
         return response.text();
@@ -67,11 +68,14 @@ function App() {
           let parsed = JSON.parse("\"" + el + "\"");
           return parsed.slice(parsed.lastIndexOf(":") + 2, -2);
         });        
-
+        function handleClick(e, programName) {
+          let tag = document.getElementById(programName + "Disciplines");
+          tag.style.display = tag.style.display == "none" ?  "block" : "none"; 
+      }
         setPrograms(arr.map((element, i) => (
-          <ul key={i} style = {{listStyle: "None", paddingLeft: "0"}}>
-           <button style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button> <AddDisciplines element={element} i={i}/>
-          </ul>
+          <div>
+            <button onClick={e => handleClick(e, element)} style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button> <AddDisciplines element={element} i={i}/>
+          </div>
         )));
         //setPrograms(arr);
       });
