@@ -34,6 +34,18 @@ app.get('/getAllDisciplinesByProgramName/:ProgramName', (req, res) => {
   })
 })
 
+app.get('/getAllLabWorksByProgramAndDisciplineNames/:ProgramName/:DisciplineName', (req, res) => {
+  const ProgramName = "'" + req.params.ProgramName + "'";
+  const DisciplineName = "'" + req.params.DisciplineName + "'";
+  const query = "SELECT LW.name FROM LabWorksToEducationalProgramsAndDisciplines AS LTEPAD JOIN EducationalPrograms AS EP ON LTEPAD.educationalProgramId = EP.id JOIN Disciplines AS D ON LTEPAD.disciplineId = D.id JOIN LabWorks AS LW ON LTEPAD.labWorkId = LW.id WHERE EP.name = " + ProgramName +  " AND D.name = " + DisciplineName + ";";
+  postgre.executeQuery(query).then(response => {
+    res.status(200).send(response);
+  })
+  .catch(error => {
+    res.status(500).send(error);
+  })
+})
+
 
 // app.get('/', (req, res) => {
 //   console.log(pool.query("SELECT * FROM EducationalPrograms", 
