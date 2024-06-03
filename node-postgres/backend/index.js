@@ -3,6 +3,18 @@ const app = express()
 const port = 3001
 const postgre = require('./database_interaction')
 
+String.prototype.hashCode = function() {
+  var hash = 0,
+    i, chr;
+  if (this.length === 0) return hash;
+  for (i = 0; i < this.length; i++) {
+    chr = this.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
+    hash |= 0; // Convert to 32bit integer
+  }
+  return hash;
+}
+
 app.use(express.json());
 app.use(function (req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
@@ -15,7 +27,7 @@ app.use(function (req, res, next) {
 });
 
 app.get('/getAllPrograms', (req, res) => {
-  postgre.executeQuery("SELECT * FROM EducationalPrograms").then(response => {
+  postgre.executeQuery("SELECT name FROM EducationalPrograms").then(response => {
     res.status(200).send(response);
   })
   .catch(error => {
@@ -38,6 +50,27 @@ app.get('/getAllLabWorksByProgramAndDisciplineNames/:ProgramName/:DisciplineName
   const ProgramName = "'" + req.params.ProgramName + "'";
   const DisciplineName = "'" + req.params.DisciplineName + "'";
   const query = "SELECT LW.name FROM LabWorksToEducationalProgramsAndDisciplines AS LTEPAD JOIN EducationalPrograms AS EP ON LTEPAD.educationalProgramId = EP.id JOIN Disciplines AS D ON LTEPAD.disciplineId = D.id JOIN LabWorks AS LW ON LTEPAD.labWorkId = LW.id WHERE EP.name = " + ProgramName +  " AND D.name = " + DisciplineName + ";";
+  postgre.executeQuery(query).then(response => {
+    res.status(200).send(response);
+  })
+  .catch(error => {
+    res.status(500).send(error);
+  })
+})
+
+app.get('/addLabWork/:ProgramName/:DisciplineName/:LabWorkName', (req, res) => {
+  const ProgramName = "'" + req.params.ProgramName + "'";
+  const DisciplineName = "'" + req.params.DisciplineName + "'";
+  const LabWorkName = "'" + req.params.LabWorkName + "'";
+  const ProgramId = ProgramName.hashCode();
+  const DisciplineId =  DisciplineName.hashCode();
+  const LabWorkId = LabWorkName.hashCode();
+  const insert_into_EducationalPrograms = "INSERT INTO EducationalPrograms (id, name) VALUES (" + ProgramId  + ", " + ProgramName + ") ON CONFLICT DO NOTHING;";
+  const insert_into_Disciplines = "INSERT INTO Disciplines (id, name) VALUES (" + DisciplineId + ", " + DisciplineName + ") ON CONFLICT DO NOTHING;";
+  const insert_into_LabWorkName = "INSERT INTO LabWorks (id, name) VALUES (" + LabWorkId + ", " + LabWorkName + ") ON CONFLICT DO NOTHING;";
+  const insert_into_LabWorksToEducationalProgramsAndDisciplines =  "INSERT INTO LabWorksToEducationalProgramsAndDisciplines (LabWorkId, EducationalProgramId, DisciplineId) VALUES " + `(${LabWorkId}, ${ProgramId}, ${DisciplineId}) ON CONFLICT DO NOTHING;`;
+  const insert_into_disciplinesIdToEducationalProgramId = "INSERT INTO DisciplinesIdToEducationalProgramId (disciplineId, educationalProgramId) VALUES " + `(${DisciplineId}, ${ProgramId}) ON CONFLICT DO NOTHING;`
+  const query = insert_into_EducationalPrograms + insert_into_Disciplines + insert_into_LabWorkName + insert_into_disciplinesIdToEducationalProgramId + insert_into_LabWorksToEducationalProgramsAndDisciplines;
   postgre.executeQuery(query).then(response => {
     res.status(200).send(response);
   })

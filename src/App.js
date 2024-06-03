@@ -51,6 +51,7 @@ function AddDisciplines({element, i}) {
         return response.text();
       })
       .then(data => {
+        
         let arr = MyJsonParser(data);
         setDisciplines(arr.map((discipline, i) => (
           <ul key={i} style = {{listStyle: "None", paddingLeft: "2vw"}}>
@@ -99,10 +100,7 @@ function App() {
         // for(let i = 0; i < arr.length; i++) {
         //   arr[i] = arr[i].substring(arr[i].lastIndexOf(":") + 2, arr[i].length - 2);
         // }
-        let arr = JSON.stringify(data).slice(2, -2).split(",").filter((_, i) => i % 2).map(el => {
-          let parsed = JSON.parse("\"" + el + "\"");
-          return parsed.slice(parsed.lastIndexOf(":") + 2, -2);
-        });        
+        let arr = MyJsonParser(data);
         function handleClick(e, programName) {
           let tag = document.getElementById(programName + "Disciplines");
           tag.style.display = tag.style.display == "none" ?  "block" : "none"; 
