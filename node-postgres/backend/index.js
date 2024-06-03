@@ -27,7 +27,7 @@ app.use(function (req, res, next) {
 });
 
 app.get('/getAllPrograms', (req, res) => {
-  postgre.executeQuery("SELECT name FROM EducationalPrograms").then(response => {
+  postgre.executeQuery("SELECT name FROM EducationalPrograms;").then(response => {
     res.status(200).send(response);
   })
   .catch(error => {
@@ -37,7 +37,20 @@ app.get('/getAllPrograms', (req, res) => {
 
 app.get('/getAllDisciplinesByProgramName/:ProgramName', (req, res) => {
   const ProgramName = "'" + req.params.ProgramName + "'";
-  const query = "SELECT D.name FROM DisciplinesIdToEducationalProgramId AS DTEP JOIN EducationalPrograms AS EP ON DTEP.educationalProgramId = EP.id JOIN Disciplines AS D ON DTEP.disciplineId = D.id WHERE EP.name = " + ProgramName + ";";
+  const query = "SELECT DISTINCT D.name FROM LabWorksToEducationalProgramsAndDisciplines AS DTEP JOIN EducationalPrograms AS EP ON DTEP.educationalProgramId = EP.id JOIN Disciplines AS D ON DTEP.disciplineId = D.id WHERE EP.name = " + ProgramName + ";";
+  postgre.executeQuery(query).then(response => {
+    res.status(200).send(response);
+  })
+  .catch(error => {
+    res.status(500).send(error);
+  })
+})
+
+app.get('/delete/:Program/:Discipline/:LabWork', (req, res) => {
+  const Program = "'" + req.params.Program + "'";
+  const  Discipline = "'" + req.params.Discipline + "'";
+  const LabWork = "'" + req.params.LabWork + "'";
+  const query = "DELETE FROM LabWorksToEducationalProgramsAndDisciplines WHERE " + `EducationalProgramId = ${Program.hashCode()} AND DisciplineId = ${Discipline.hashCode()} AND LabWorkId = ${LabWork.hashCode()};`;
   postgre.executeQuery(query).then(response => {
     res.status(200).send(response);
   })

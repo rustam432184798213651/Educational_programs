@@ -1,6 +1,6 @@
 import './../css/PlusSign.css'
 import { GrAdd } from "react-icons/gr";
-import { useState, form } from 'react';
+import { useState} from 'react';
 import ReactDOM from 'react-dom';
 
 const PopupForm = ({ show, onClose }) => {
@@ -15,6 +15,7 @@ const PopupForm = ({ show, onClose }) => {
       const LabWork = document.getElementById("add_lab_work");
       fetch(`http://localhost:3001/addLabWork/${Program.value}/${Discipline.value}/${LabWork.value}`);
       onClose();
+      window.location.reload();
     };
   
     return ReactDOM.createPortal(

@@ -6,6 +6,7 @@ import { AiOutlineArrowDown } from "react-icons/ai";
 const localhost = 'http://localhost:3001'
 
 function MyJsonParser(data) {
+  console.log(data);
   return JSON.stringify(data).slice(2, -2).split(",").map(el => {
     let parsed = JSON.parse("\"" + el + "\"");
     return parsed.slice(parsed.lastIndexOf(":") + 2, -2);
