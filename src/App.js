@@ -5,11 +5,13 @@ import { AiOutlineArrowDown } from "react-icons/ai";
 import { GiConsoleController } from 'react-icons/gi';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import {jsPDF} from 'jspdf';
+
+
 
 const localhost = 'http://localhost:3001'
 
 function MyJsonParser(data) {
-  console.log(data);
   return JSON.stringify(data).slice(2, -2).split(",").map(el => {
     let parsed = JSON.parse("\"" + el + "\"");
     return parsed.slice(parsed.lastIndexOf(":") + 2, -2);
@@ -17,7 +19,6 @@ function MyJsonParser(data) {
 }
 
 function getHtmlContentFromResponse(data) {
-  console.log(data);
   return JSON.parse(data)[0].htmlcontent;
 }
 
@@ -75,7 +76,7 @@ function AddDisciplines({element, i, displayLab, updateCurrentLabWork}) {
   }, []);
   return (
     <>
-    <div  contentEditable="true" value={"div" + i} className="listOfPrograms" style={{display: "inline", border:"1px solid red"}}>{element}</div>
+    <div  contentEditable="true" value={"div" + i} className="listOfPrograms" style={{display: "inline"}}>{element}</div>
     <ul id={ element + "Disciplines"} className="disciplineList" style = {{listStyle: "None", paddingLeft: "0", display:"none"}}>
        {disciplines}
      </ul>
@@ -84,6 +85,7 @@ function AddDisciplines({element, i, displayLab, updateCurrentLabWork}) {
 }
 
 function App() {
+  const [value, setValue] = useState(false);
   const [programs, setPrograms] = useState(false);
   const [cProgram, setCPrograms] = useState(false);
   const [cDiscipline, setCDiscipline] = useState(false);
@@ -94,11 +96,7 @@ function App() {
     setCLabWork(labWork);
   }
 
-  const [value, setValue] = useState(false);
   function displayLab(e, program, discipline, lab) {
-    console.log(program);
-    console.log(discipline);
-    console.log(lab);
     fetch(localhost + `/getLabContent/${program}/${discipline}/${lab}`)
     .then(response => {
       return response.text();
@@ -146,13 +144,6 @@ function App() {
     getAllPrograms();
   }, []);
   function handler() {
-    // console.log("program: ");
-    // console.log(cProgram);
-    // console.log("discipline: ");
-    // console.log(cDiscipline);
-    // console.log("labWork: ");
-    // console.log(cLabWork);
-    // console.log(`updateHtmlContent/${cProgram}/${cDiscipline}/${cLabWork}/${value}`);
     const requestOptions = {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -178,7 +169,14 @@ function App() {
     document.body.removeChild(fileDownload);
   }
   function exportToPdf() {
-
+    const doc = new jsPDF("l", "pt", "A4");
+  // Adding the fonts.
+    doc.setFont('Inter-Regular', 'normal');
+      doc.html(value, {
+        async callback(doc) {
+            await doc.save('something.pdf');
+        },
+    });
   }
   return <><div id="topPanel">  Educational programs </div>
   <div style={{  display: "flex", justifyContent: "space-between"}}>

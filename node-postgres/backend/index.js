@@ -98,7 +98,6 @@ app.get('/getLabContent/:Program/:Discipline/:LabWork', (req, res) => {
   const LabWorkName      = "'" + req.params.LabWork    + "'"; 
   const query = "SELECT LTEPAD.htmlContent FROM LabWorksToEducationalProgramsAndDisciplines AS LTEPAD JOIN EducationalPrograms AS EP ON LTEPAD.educationalProgramId = EP.id JOIN Disciplines AS D ON LTEPAD.disciplineId = D.id JOIN LabWorks AS LW ON LTEPAD.labWorkId = LW.id WHERE EP.name = " + ProgramName +  " AND D.name = " + DisciplineName + " AND LW.name = "+ LabWorkName +";";
   postgre.executeQuery(query).then(response => {
-    console.log(response);
     res.status(200).send(response);
   })
   .catch(error => {
@@ -113,8 +112,6 @@ app.put('/updateHtmlContent/:Program/:Discipline/:LabWork', (req, res) => {
   const ProgramId = ProgramName.hashCode();
   const DisciplineId = DisciplineName.hashCode();
   const LabWorkId = LabWorkName.hashCode();
-  console.log("req.body.content:");
-  console.log(req.body.content);
   const query = `UPDATE LabWorksToEducationalProgramsAndDisciplines SET htmlcontent = '${req.body.content}' WHERE educationalprogramid = ${ProgramId} AND disciplineid = ${DisciplineId} AND labworkid = ${LabWorkId};`;
   postgre.executeQuery(query).then(response => {
     res.status(200).send(response);
@@ -123,17 +120,6 @@ app.put('/updateHtmlContent/:Program/:Discipline/:LabWork', (req, res) => {
     res.status(500).send(error);
   })
 })
-
-
-// app.get('/', (req, res) => {
-//   console.log(pool.query("SELECT * FROM EducationalPrograms", 
-//     (error, results) => {
-//         if(results && results.rows) {
-//            res.status(200).send(results.rows);
-//         }
-//     }
-// ))
-// })
 
 app.listen(port, () => {
   console.log(`App running on port ${port}.`)
