@@ -17,10 +17,11 @@ function MyJsonParser(data) {
 }
 
 function getHtmlContentFromResponse(data) {
+  console.log(data);
   return JSON.parse(data)[0].htmlcontent;
 }
 
-function AddLabWorks({program, discipline, displayLab}) {
+function AddLabWorks({program, discipline, displayLab, updateCurrentLabWork}) {
   const [labWorks, setLabWorks] = useState(false); // Надо пофиксить потом
   function getLabWorksToDisciplineAndProgram(program, discipline) {
     fetch(localhost + '/getAllLabWorksByProgramAndDisciplineNames/' + program + '/' + discipline)
@@ -30,7 +31,7 @@ function AddLabWorks({program, discipline, displayLab}) {
     .then(data => {
       let arr = MyJsonParser(data);
       setLabWorks(arr.map((element, i) => (
-        <button onClick={(e) => displayLab(e, program, discipline, element)}>  <div style={{width: "10vw"}}> {element} </div></button>
+        <button onClick={(e) => {displayLab(e, program, discipline, element); updateCurrentLabWork(e, program, discipline, element)}}>  <div style={{width: "10vw"}}> {element} </div></button>
       )));
     })
   }
@@ -47,7 +48,7 @@ function AddLabWorks({program, discipline, displayLab}) {
   )
 }
 
-function AddDisciplines({element, i, displayLab}) {
+function AddDisciplines({element, i, displayLab, updateCurrentLabWork}) {
   const [disciplines, setDisciplines] = useState(false);
   function getDisciplinesToProgram(program) {
     function handler(e, program, discipline) {
@@ -63,7 +64,7 @@ function AddDisciplines({element, i, displayLab}) {
         let arr = MyJsonParser(data);
         setDisciplines(arr.map((discipline, i) => (
           <ul key={i} style = {{listStyle: "None", paddingLeft: "2vw"}}>
-           <button onClick={e => handler(e, program, discipline)} style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button>  <AddLabWorks program={program} discipline={discipline} displayLab={displayLab}/>
+           <button onClick={e => handler(e, program, discipline)} style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button>  <AddLabWorks program={program} discipline={discipline} displayLab={displayLab} updateCurrentLabWork={updateCurrentLabWork}/>
           </ul>
         )));
       })
@@ -74,7 +75,7 @@ function AddDisciplines({element, i, displayLab}) {
   }, []);
   return (
     <>
-    <div contentEditable="true" value={"div" + i} className="listOfPrograms" style={{display: "inline"}}>{element}</div>
+    <div  contentEditable="true" value={"div" + i} className="listOfPrograms" style={{display: "inline", border:"1px solid red"}}>{element}</div>
     <ul id={ element + "Disciplines"} className="disciplineList" style = {{listStyle: "None", paddingLeft: "0", display:"none"}}>
        {disciplines}
      </ul>
@@ -84,9 +85,20 @@ function AddDisciplines({element, i, displayLab}) {
 
 function App() {
   const [programs, setPrograms] = useState(false);
+  const [cProgram, setCPrograms] = useState(false);
+  const [cDiscipline, setCDiscipline] = useState(false);
+  const [cLabWork, setCLabWork] = useState(false);
+  function updateCurrentLabWork(e, program, discipline, labWork) {
+    setCPrograms(program);
+    setCDiscipline(discipline);
+    setCLabWork(labWork);
+  }
 
   const [value, setValue] = useState(false);
   function displayLab(e, program, discipline, lab) {
+    console.log(program);
+    console.log(discipline);
+    console.log(lab);
     fetch(localhost + `/getLabContent/${program}/${discipline}/${lab}`)
     .then(response => {
       return response.text();
@@ -124,7 +136,7 @@ function App() {
       }
         setPrograms(arr.map((element, i) => (
           <div style={{width: "20vw", marginRight: "0"}}>
-            <button onClick={e => handleClick(e, element)} style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button> <AddDisciplines element={element} i={i} displayLab={displayLab}/>
+            <button onClick={e => handleClick(e, element)} style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button> <AddDisciplines element={element} i={i} displayLab={displayLab} updateCurrentLabWork={updateCurrentLabWork}/>
           </div>
         )));
         //setPrograms(arr);
@@ -133,14 +145,34 @@ function App() {
   useEffect(() => {
     getAllPrograms();
   }, []);
-
-  
+  function handler() {
+    console.log("program: ");
+    console.log(cProgram);
+    console.log("discipline: ");
+    console.log(cDiscipline);
+    console.log("labWork: ");
+    console.log(cLabWork);
+    console.log(`updateHtmlContent/${cProgram}/${cDiscipline}/${cLabWork}/${value}`);
+    fetch(localhost + `/updateHtmlContent/${cProgram}/${cDiscipline}/${cLabWork}/${value}`)
+    .then(response => {
+        return response.text();
+      })
+      .then(data => {
+        console.log(data);
+      });
+  }
   return <><div id="topPanel">  Educational programs </div>
-  <SearchAndDeleteTab />
-  <ul id="mainList" style = {{listStyle: "None", paddingLeft: "0"}}>
-    {programs}
-  </ul>
-  <ReactQuill theme="snow" value={value} onChange={setValue} style={{marginLeft: "22vw", marginTop: "-21vh"}} /></>;
+  <div style={{  display: "flex", justifyContent: "space-between"}}>
+    <div>
+      <SearchAndDeleteTab key="foeroifjer"  program={cProgram} discipline={cDiscipline} labWork={cLabWork} value={value} handler={handler}/>
+      <ul id="mainList" style = {{listStyle: "None", paddingLeft: "0"}}>
+        {programs}
+      </ul>
+    </div>
+    <ReactQuill theme="snow" value={value}  onChange={setValue} style={{ marginTop:"0", marginRight:"0", marginBottom:"0", padding:"0", width: "80vw"}} />
+
+  </div>
+  </>;
 }
 
 export default App;

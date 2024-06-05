@@ -97,6 +97,23 @@ app.get('/getLabContent/:Program/:Discipline/:LabWork', (req, res) => {
   const DisciplineName   = "'" + req.params.Discipline + "'"; 
   const LabWorkName      = "'" + req.params.LabWork    + "'"; 
   const query = "SELECT LTEPAD.htmlContent FROM LabWorksToEducationalProgramsAndDisciplines AS LTEPAD JOIN EducationalPrograms AS EP ON LTEPAD.educationalProgramId = EP.id JOIN Disciplines AS D ON LTEPAD.disciplineId = D.id JOIN LabWorks AS LW ON LTEPAD.labWorkId = LW.id WHERE EP.name = " + ProgramName +  " AND D.name = " + DisciplineName + " AND LW.name = "+ LabWorkName +";";
+  postgre.executeQuery(query).then(response => {
+    console.log(response);
+    res.status(200).send(response);
+  })
+  .catch(error => {
+    res.status(500).send(error);
+  })
+})
+
+app.get('/updateHtmlContent/:Program/:Discipline/:LabWork/*', (req, res) => {
+  const ProgramName      = "'" + req.params.Program    + "'";  
+  const DisciplineName   = "'" + req.params.Discipline + "'"; 
+  const LabWorkName      = "'" + req.params.LabWork    + "'"; 
+  const ProgramId = ProgramName.hashCode();
+  const DisciplineId = DisciplineName.hashCode();
+  const LabWorkId = LabWorkName.hashCode();
+  const query = `UPDATE LabWorksToEducationalProgramsAndDisciplines SET htmlcontent = '${req.params[0]}' WHERE educationalprogramid = ${ProgramId} AND disciplineid = ${DisciplineId} AND labworkid = ${LabWorkId}`;
   console.log(query);
   postgre.executeQuery(query).then(response => {
     console.log(response);
