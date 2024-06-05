@@ -12,6 +12,9 @@ import {jsPDF} from 'jspdf';
 const localhost = 'http://localhost:3001'
 
 function MyJsonParser(data) {
+  if(data.length == 0) {
+    return {};
+  }
   return JSON.stringify(data).slice(2, -2).split(",").map(el => {
     let parsed = JSON.parse("\"" + el + "\"");
     return parsed.slice(parsed.lastIndexOf(":") + 2, -2);
@@ -127,7 +130,13 @@ function App() {
         // for(let i = 0; i < arr.length; i++) {
         //   arr[i] = arr[i].substring(arr[i].lastIndexOf(":") + 2, arr[i].length - 2);
         // }
-        let arr = MyJsonParser(data);
+        let arr = null;
+        if (data === undefined || data === '[]') {
+          arr = [];
+        }
+        else {
+          arr = MyJsonParser(data);
+        }
         function handleClick(e, programName) {
           let tag = document.getElementById(programName + "Disciplines");
           tag.style.display = tag.style.display == "none" ?  "block" : "none"; 
