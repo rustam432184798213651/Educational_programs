@@ -178,14 +178,37 @@ function App() {
     document.body.removeChild(fileDownload);
   }
   function exportToPdf() {
-    const doc = new jsPDF("l", "pt", "A4");
-  // Adding the fonts.
-    doc.setFont('Inter-Regular', 'normal');
-      doc.html(value, {
-        async callback(doc) {
-            await doc.save('something.pdf');
-        },
-    });
+        // Create a temporary container for the HTML content
+        var container = document.createElement("div");
+        var blocker = document.createElement("div");
+        blocker.style.backgroundColor = "white";
+        blocker.style.height = "100vh";
+        document.body.appendChild(blocker);
+        container.innerHTML = value;
+        document.body.appendChild(container);
+
+        // Load jsPDF and convert the HTML content to PDF
+        const doc = new jsPDF("l", "pt", [1000, 1100]);
+        doc.html(container, {
+            callback: function (doc) {
+              doc.save('document2.pdf');
+              document.body.removeChild(blocker);
+              document.body.removeChild(container);
+            },
+            x: 10,
+            y: 10
+        });
+  
+  // New Promise-based usage:
+    //  const doc = new jsPDF("portrait", "px", [1500, 1400]);
+    // doc.setFont('Inter-Regular', 'normal');
+    // console.log(value);
+    //   doc.html("Something about rocks", {
+    //     async callback(doc) {
+    //         await doc.save('something.pdf');
+    //     },
+    //     margin: [0, 0, 0, 0]
+    //   });
   }
   return <><div id="topPanel">  Educational programs </div>
   <div style={{  display: "flex", justifyContent: "space-between"}}>
