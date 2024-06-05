@@ -106,17 +106,17 @@ app.get('/getLabContent/:Program/:Discipline/:LabWork', (req, res) => {
   })
 })
 
-app.get('/updateHtmlContent/:Program/:Discipline/:LabWork/*', (req, res) => {
+app.put('/updateHtmlContent/:Program/:Discipline/:LabWork', (req, res) => {
   const ProgramName      = "'" + req.params.Program    + "'";  
   const DisciplineName   = "'" + req.params.Discipline + "'"; 
   const LabWorkName      = "'" + req.params.LabWork    + "'"; 
   const ProgramId = ProgramName.hashCode();
   const DisciplineId = DisciplineName.hashCode();
   const LabWorkId = LabWorkName.hashCode();
-  const query = `UPDATE LabWorksToEducationalProgramsAndDisciplines SET htmlcontent = '${req.params[0]}' WHERE educationalprogramid = ${ProgramId} AND disciplineid = ${DisciplineId} AND labworkid = ${LabWorkId}`;
-  console.log(query);
+  console.log("req.body.content:");
+  console.log(req.body.content);
+  const query = `UPDATE LabWorksToEducationalProgramsAndDisciplines SET htmlcontent = '${req.body.content}' WHERE educationalprogramid = ${ProgramId} AND disciplineid = ${DisciplineId} AND labworkid = ${LabWorkId};`;
   postgre.executeQuery(query).then(response => {
-    console.log(response);
     res.status(200).send(response);
   })
   .catch(error => {

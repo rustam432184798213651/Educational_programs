@@ -2,9 +2,9 @@ import './css/App.css';
 import SearchAndDeleteTab from './SearchAndDeleteTab'
 import {useState, useEffect} from 'react';
 import { AiOutlineArrowDown } from "react-icons/ai";
+import { GiConsoleController } from 'react-icons/gi';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
-
 
 const localhost = 'http://localhost:3001'
 
@@ -146,28 +146,44 @@ function App() {
     getAllPrograms();
   }, []);
   function handler() {
-    console.log("program: ");
-    console.log(cProgram);
-    console.log("discipline: ");
-    console.log(cDiscipline);
-    console.log("labWork: ");
-    console.log(cLabWork);
-    console.log(`updateHtmlContent/${cProgram}/${cDiscipline}/${cLabWork}/${value}`);
-    fetch(localhost + `/updateHtmlContent/${cProgram}/${cDiscipline}/${cLabWork}/${value}`)
-    .then(response => {
-        return response.text();
-      })
-      .then(data => {
-        console.log(data);
-      });
+    // console.log("program: ");
+    // console.log(cProgram);
+    // console.log("discipline: ");
+    // console.log(cDiscipline);
+    // console.log("labWork: ");
+    // console.log(cLabWork);
+    // console.log(`updateHtmlContent/${cProgram}/${cDiscipline}/${cLabWork}/${value}`);
+    const requestOptions = {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content: value })
+  };
+  fetch(localhost + `/updateHtmlContent/${cProgram}/${cDiscipline}/${cLabWork}`, requestOptions)
+      .then(response => response.json())
+      .then(data => {});
   }
   function exportToDocx() {
-    
+    var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " + "xmlns:w='urn:schemas-microsoft-com:office:word' " + 
+    "xmlns='http://www.w3.org/TR/REC-html40'>" +
+    "<head><meta charset='utf-8'></head><body>";
+    var footer = "</body></html>";
+    var sourceHTML = header+value+footer;
+    var source = 'data:application/vnd.ms-word;charset=utf-8,' + encodeURIComponent(sourceHTML);
+
+    var fileDownload = document.createElement("a");
+    document.body.appendChild(fileDownload);
+    fileDownload.href = source;
+    fileDownload.download = 'document.doc';
+    fileDownload.click();
+    document.body.removeChild(fileDownload);
+  }
+  function exportToPdf() {
+
   }
   return <><div id="topPanel">  Educational programs </div>
   <div style={{  display: "flex", justifyContent: "space-between"}}>
     <div>
-      <SearchAndDeleteTab key="foeroifjer"  program={cProgram} discipline={cDiscipline} labWork={cLabWork} value={value} handler={handler}/>
+      <SearchAndDeleteTab key="foeroifjer"  program={cProgram} discipline={cDiscipline} labWork={cLabWork} value={value} handler={handler} exportToDocx={exportToDocx} exportToPdf={exportToPdf}/>
       <ul id="mainList" style = {{listStyle: "None", paddingLeft: "0"}}>
         {programs}
       </ul>
