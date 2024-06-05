@@ -123,7 +123,7 @@ function App() {
           tag.style.display = tag.style.display == "none" ?  "block" : "none"; 
       }
         setPrograms(arr.map((element, i) => (
-          <div>
+          <div style={{width: "20vw", marginRight: "0"}}>
             <button onClick={e => handleClick(e, element)} style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button> <AddDisciplines element={element} i={i} displayLab={displayLab}/>
           </div>
         )));
@@ -140,7 +140,7 @@ function App() {
   <ul id="mainList" style = {{listStyle: "None", paddingLeft: "0"}}>
     {programs}
   </ul>
-  <ReactQuill theme="snow" value={value} onChange={setValue} /></>;
+  <ReactQuill theme="snow" value={value} onChange={setValue} style={{marginLeft: "22vw", marginTop: "-21vh"}} /></>;
 }
 
 export default App;
