@@ -161,6 +161,9 @@ function App() {
         console.log(data);
       });
   }
+  function exportToDocx() {
+    
+  }
   return <><div id="topPanel">  Educational programs </div>
   <div style={{  display: "flex", justifyContent: "space-between"}}>
     <div>
