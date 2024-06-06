@@ -31,7 +31,7 @@ const PopupForm = ({ show, onClose }) => {
           <form id="insertForm" onSubmit={handleSubmit}>
             <div>
                 <label>What type:</label>
-                <input type="radio" id="Program" name="rename_type" value="Program"/>
+                <input type="radio" id="Program" name="rename_type" value="Program" checked/>
                 <label for="Program">Program</label>
                 <input type="radio" id="Discipline" name="rename_type" value="Discipline"/>
                 <label for="Discipline">Discipline</label>
