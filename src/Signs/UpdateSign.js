@@ -5,7 +5,7 @@ function UpdateSign({program, discipline, labWork, newHtmlContent, handler}) {
    
     return (
         <>
-           <button id="UpdateSign" onClick={handler}> <GrUpdate /></button>
+           <button style={{height: "100%"}} className="Sign" id="UpdateSign" onClick={handler}> <GrUpdate /></button>
         </>
     );
 }

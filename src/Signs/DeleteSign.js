@@ -54,7 +54,7 @@ export default function DeleteSign() {
     };
     return (
         <>
-           <button id="DeleteSign" onClick={openPopup}> <RiDeleteBin5Line /> </button>
+           <button style={{height: "100%"}} className="Sign" id="DeleteSign" onClick={openPopup}> <RiDeleteBin5Line /> </button>
            <PopupForm show={isPopupOpen} onClose={closePopup} />
         </>
     );

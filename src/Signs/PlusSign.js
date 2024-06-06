@@ -56,7 +56,7 @@ function PlusSign() {
     };
     return (
         <>
-            <button id="PlusSign" onClick={openPopup}><GrAdd /></button>
+            <button style={{height: "100%"}} className="Sign" id="PlusSign" onClick={openPopup}><GrAdd /></button>
             <PopupForm show={isPopupOpen} onClose={closePopup} />
         </>
     );

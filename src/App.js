@@ -44,7 +44,7 @@ function AddLabWorks({program, discipline, displayLab, updateCurrentLabWork}) {
   }, []);
   return (
     <>
-      <div style={{display: "inline"}} contentEditable="true"> {discipline} </div>
+      <div style={{display: "inline"}} > {discipline} </div>
       <ul id={"labWorks" + program + discipline} style={{display:"none"}}>
         {labWorks} 
       </ul>
@@ -79,7 +79,7 @@ function AddDisciplines({element, i, displayLab, updateCurrentLabWork}) {
   }, []);
   return (
     <>
-    <div  contentEditable="true" value={"div" + i} className="listOfPrograms" style={{display: "inline"}}>{element}</div>
+    <div value={"div" + i} className="listOfPrograms" style={{display: "inline"}}>{element}</div>
     <ul id={ element + "Disciplines"} className="disciplineList" style = {{listStyle: "None", paddingLeft: "0", display:"none"}}>
        {disciplines}
      </ul>
