@@ -146,11 +146,13 @@ function App() {
             <button onClick={e => handleClick(e, element)} style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button> <AddDisciplines element={element} i={i} displayLab={displayLab} updateCurrentLabWork={updateCurrentLabWork}/>
           </div>
         )));
+        
         //setPrograms(arr);
       });
   }
   useEffect(() => {
     getAllPrograms();
+    
   }, []);
   function handler() {
     const requestOptions = {

@@ -82,8 +82,7 @@ app.get('/addLabWork/:ProgramName/:DisciplineName/:LabWorkName', (req, res) => {
   const insert_into_Disciplines = "INSERT INTO Disciplines (id, name) VALUES (" + DisciplineId + ", " + DisciplineName + ") ON CONFLICT DO NOTHING;";
   const insert_into_LabWorkName = "INSERT INTO LabWorks (id, name) VALUES (" + LabWorkId + ", " + LabWorkName + ") ON CONFLICT DO NOTHING;";
   const insert_into_LabWorksToEducationalProgramsAndDisciplines =  "INSERT INTO LabWorksToEducationalProgramsAndDisciplines (LabWorkId, EducationalProgramId, DisciplineId) VALUES " + `(${LabWorkId}, ${ProgramId}, ${DisciplineId}) ON CONFLICT DO NOTHING;`;
-  const insert_into_disciplinesIdToEducationalProgramId = "INSERT INTO DisciplinesIdToEducationalProgramId (disciplineId, educationalProgramId) VALUES " + `(${DisciplineId}, ${ProgramId}) ON CONFLICT DO NOTHING;`
-  const query = insert_into_EducationalPrograms + insert_into_Disciplines + insert_into_LabWorkName + insert_into_disciplinesIdToEducationalProgramId + insert_into_LabWorksToEducationalProgramsAndDisciplines;
+  const query = insert_into_EducationalPrograms + insert_into_Disciplines + insert_into_LabWorkName +  insert_into_LabWorksToEducationalProgramsAndDisciplines;
   postgre.executeQuery(query).then(response => {
     res.status(200).send(response);
   })
@@ -119,6 +118,30 @@ app.put('/updateHtmlContent/:Program/:Discipline/:LabWork', (req, res) => {
   .catch(error => {
     res.status(500).send(error);
   })
+})
+
+app.put('/rename/:type_/:current_/:new_', (req, res) => {
+  const dct = {
+    "Program": ["EducationalPrograms", "educationalProgramId"],
+    "Discipline": ["Disciplines", "disciplineId"],
+    "LabWork": ["LabWorks", "labWorkId"]
+  };
+  console.log(req.params);
+  const [tableNameToChange, idToChange] = dct[req.params.type_];
+  const current_= "'" + req.params.current_ + "'";
+  const new_ = "'" + req.params.new_ + "'";
+  const current_hash_code = current_.hashCode();
+  const new_hash_code = new_.hashCode();
+  const query = `UPDATE ${tableNameToChange} SET id = ${new_hash_code}, name = ${new_} WHERE id = ${current_hash_code}; UPDATE labworkstoeducationalprogramsanddisciplines SET ${idToChange} = ${new_hash_code} WHERE ${idToChange} = ${current_hash_code}`;
+  
+  console.log(query);
+  postgre.executeQuery(query).then(response => {
+    res.status(200).send(response);
+  })
+  .catch(error => {
+    res.status(500).send(error);
+  })
+
 })
 
 app.listen(port, () => {
