@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const port = 3001
 const postgre = require('./database_interaction')
+const bodyParser = require('body-parser');
 
 String.prototype.hashCode = function() {
   var hash = 0,
@@ -15,7 +16,7 @@ String.prototype.hashCode = function() {
   return hash;
 }
 
-app.use(express.json());
+app.use(bodyParser.json({ limit: "50mb" }))
 app.use(function (req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   res.setHeader("Access-Control-Allow-Methods", "GET,PUT");
@@ -111,6 +112,7 @@ app.put('/updateHtmlContent/:Program/:Discipline/:LabWork', (req, res) => {
   const ProgramId = ProgramName.hashCode();
   const DisciplineId = DisciplineName.hashCode();
   const LabWorkId = LabWorkName.hashCode();
+  console.log(req.body.content);
   const query = `UPDATE LabWorksToEducationalProgramsAndDisciplines SET htmlcontent = '${req.body.content}' WHERE educationalprogramid = ${ProgramId} AND disciplineid = ${DisciplineId} AND labworkid = ${LabWorkId};`;
   postgre.executeQuery(query).then(response => {
     res.status(200).send(response);
@@ -126,14 +128,13 @@ app.put('/rename/:type_/:current_/:new_', (req, res) => {
     "Discipline": ["Disciplines", "disciplineId"],
     "LabWork": ["LabWorks", "labWorkId"]
   };
-  console.log(req.params);
   const [tableNameToChange, idToChange] = dct[req.params.type_];
   const current_= "'" + req.params.current_ + "'";
   const new_ = "'" + req.params.new_ + "'";
   const current_hash_code = current_.hashCode();
   const new_hash_code = new_.hashCode();
-  const query = `UPDATE ${tableNameToChange} SET id = ${new_hash_code}, name = ${new_} WHERE id = ${current_hash_code}; UPDATE labworkstoeducationalprogramsanddisciplines SET ${idToChange} = ${new_hash_code} WHERE ${idToChange} = ${current_hash_code}`;
-  
+  const query = `UPDATE ${tableNameToChange} SET id = ${new_hash_code}, name = ${new_} WHERE id = ${current_hash_code};`;
+
   console.log(query);
   postgre.executeQuery(query).then(response => {
     res.status(200).send(response);

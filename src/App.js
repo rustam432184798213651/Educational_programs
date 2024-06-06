@@ -88,7 +88,7 @@ function AddDisciplines({element, i, displayLab, updateCurrentLabWork}) {
 }
 
 function App() {
-  const [value, setValue] = useState(false);
+  const [value, setValue] = useState("");
   const [programs, setPrograms] = useState(false);
   const [cProgram, setCPrograms] = useState(false);
   const [cDiscipline, setCDiscipline] = useState(false);
