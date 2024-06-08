@@ -12,8 +12,8 @@ import {jsPDF} from 'jspdf';
 const localhost = 'http://localhost:3001'
 
 function MyJsonParser(data) {
-  if(data.length == 0) {
-    return {};
+  if(data.length == 2) {
+    return [];
   }
   return JSON.stringify(data).slice(2, -2).split(",").map(el => {
     let parsed = JSON.parse("\"" + el + "\"");
@@ -26,7 +26,7 @@ function getHtmlContentFromResponse(data) {
 }
 
 function AddLabWorks({program, discipline, displayLab, updateCurrentLabWork}) {
-  const [labWorks, setLabWorks] = useState(false); // Надо пофиксить потом
+  const [labWorks, setLabWorks] = useState([]);
   function getLabWorksToDisciplineAndProgram(program, discipline) {
     fetch(localhost + '/getAllLabWorksByProgramAndDisciplineNames/' + program + '/' + discipline)
     .then(response => {
@@ -45,47 +45,13 @@ function AddLabWorks({program, discipline, displayLab, updateCurrentLabWork}) {
   return (
     <>
       <div style={{display: "inline"}} > {discipline} </div>
-      <ul id={"labWorks" + program + discipline} style={{display:"none"}}>
+     {labWorks.length > 0 && <ul id={"labWorks" + program + discipline} style={{display:"none"}}>
         {labWorks} 
-      </ul>
+      </ul>}
     </>
   )
 }
 
-function AddDisciplines({element, i, displayLab, updateCurrentLabWork}) {
-  const [disciplines, setDisciplines] = useState(false);
-  function getDisciplinesToProgram(program) {
-    function handler(e, program, discipline) {
-      let tag = document.getElementById("labWorks" + program + discipline);
-      tag.style.display = tag.style.display === "none" ?  "block" : "none"; 
-    }
-    fetch(localhost + '/getAllDisciplinesByProgramName/' + program)
-      .then(response => {
-        return response.text();
-      })
-      .then(data => {
-        
-        let arr = MyJsonParser(data);
-        setDisciplines(arr.map((discipline, i) => (
-          <ul key={i} style = {{listStyle: "None", paddingLeft: "2vw"}}>
-           <button onClick={e => handler(e, program, discipline)} style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button>  <AddLabWorks program={program} discipline={discipline} displayLab={displayLab} updateCurrentLabWork={updateCurrentLabWork}/>
-          </ul>
-        )));
-      })
-
-  }
-  useEffect(() => {
-    getDisciplinesToProgram(element);
-  }, []);
-  return (
-    <>
-    <div value={"div" + i} className="listOfPrograms" style={{display: "inline"}}>{element}</div>
-    <ul id={ element + "Disciplines"} className="disciplineList" style = {{listStyle: "None", paddingLeft: "0", display:"none"}}>
-       {disciplines}
-     </ul>
-    </>
-  )
-}
 
 function App() {
   const [value, setValue] = useState("");
@@ -108,7 +74,44 @@ function App() {
       setValue(getHtmlContentFromResponse(data));
     })
   }
-
+  
+  function AddDisciplines({program, i, displayLab, updateCurrentLabWork}) {
+    const [disciplines, setDisciplines] = useState([]);
+    function getDisciplinesToProgram(program) {
+      function handler(e, program, discipline) {
+        let tag = document.getElementById("labWorks" + program + discipline);
+        if (tag) {
+          tag.style.display = tag.style.display === "none" ?  "block" : "none"; 
+        }
+      }
+      fetch(localhost + '/getAllDisciplinesByProgramName/' + program)
+        .then(response => {
+          return response.text();
+        })
+        .then(data => {
+          
+          let arr = MyJsonParser(data);
+          setDisciplines(arr.map((discipline, i) => (
+            <ul key={i} style = {{listStyle: "None", paddingLeft: "2vw"}}>
+             <button onClick={e => handler(e, program, discipline)} style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button>  <AddLabWorks program={program} discipline={discipline} displayLab={displayLab} updateCurrentLabWork={updateCurrentLabWork}/>
+            </ul>
+          )));
+        })
+  
+    }
+    useEffect(() => {
+      getDisciplinesToProgram(program);
+    }, []);
+    return (
+      <>
+      <div value={"div" + i} className="listOfPrograms" style={{display: "inline"}}>{program}</div>
+      <ul id={ program + "Disciplines"} className="disciplineList" style = {{listStyle: "None", paddingLeft: "0", display:"none"}}>
+         {disciplines}
+       </ul>
+      </>
+    )
+  }
+  
   function getAllPrograms() {
 
     fetch(localhost + '/getAllPrograms')
@@ -116,20 +119,6 @@ function App() {
         return response.text();
       })
       .then(data => {
-        // let arr;
-        // arr = JSON.stringify(data);
-        // arr = arr.substring(2, arr.length - 2);
-        // arr = arr.split(",");
-        // let new_arr = [];
-        // for(let i = 0; i < arr.length; i++) {
-        //   if (i % 2) {
-        //     new_arr.push(JSON.parse("\"" + arr[i] + "\""));
-        //   }
-        // } 
-        // arr = new_arr;
-        // for(let i = 0; i < arr.length; i++) {
-        //   arr[i] = arr[i].substring(arr[i].lastIndexOf(":") + 2, arr[i].length - 2);
-        // }
         let arr = null;
         if (data === undefined || data === '[]') {
           arr = [];
@@ -141,13 +130,10 @@ function App() {
           let tag = document.getElementById(programName + "Disciplines");
           tag.style.display = tag.style.display == "none" ?  "block" : "none"; 
       }
-        setPrograms(arr.map((element, i) => (
-          <div style={{width: "20vw", marginRight: "0"}}>
-            <button onClick={e => handleClick(e, element)} style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button> <AddDisciplines element={element} i={i} displayLab={displayLab} updateCurrentLabWork={updateCurrentLabWork}/>
-          </div>
-        )));
+        setPrograms(arr.map((element, i) => (<div style={{width: "20vw", marginRight: "0"}}>
+          <button onClick={e => handleClick(e, element)} style={{backgroundColor: "transparent", backgroundRepeat: "no-repeat", border: "none", cursor: "pointer", overflow: "hidden", outline: "none"}}><AiOutlineArrowDown /> </button> <AddDisciplines program={element} i={i} displayLab={displayLab} updateCurrentLabWork={updateCurrentLabWork}/>
+        </div>)));
         
-        //setPrograms(arr);
       });
   }
   useEffect(() => {
@@ -180,7 +166,7 @@ function App() {
     document.body.removeChild(fileDownload);
   }
   function exportToPdf() {
-        // Create a temporary container for the HTML content
+
         var container = document.createElement("div");
         var blocker = document.createElement("div");
         blocker.style.backgroundColor = "white";
@@ -189,7 +175,6 @@ function App() {
         container.innerHTML = value;
         document.body.appendChild(container);
 
-        // Load jsPDF and convert the HTML content to PDF
         const doc = new jsPDF("l", "pt", [1000, 1100]);
         doc.html(container, {
             callback: function (doc) {
@@ -200,18 +185,8 @@ function App() {
             x: 10,
             y: 10
         });
-  
-  // New Promise-based usage:
-    //  const doc = new jsPDF("portrait", "px", [1500, 1400]);
-    // doc.setFont('Inter-Regular', 'normal');
-    // console.log(value);
-    //   doc.html("Something about rocks", {
-    //     async callback(doc) {
-    //         await doc.save('something.pdf');
-    //     },
-    //     margin: [0, 0, 0, 0]
-    //   });
   }
+  
   return <><div id="topPanel">  Educational programs </div>
   <div style={{  display: "flex", justifyContent: "space-between"}}>
     <div>

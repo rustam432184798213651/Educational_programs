@@ -13,7 +13,8 @@ const PopupForm = ({ show, onClose }) => {
       const Program = document.getElementById("add_program");
       const Discipline = document.getElementById("add_discipline");
       const LabWork = document.getElementById("add_lab_work");
-      fetch(`http://localhost:3001/addLabWork/${Program.value}/${Discipline.value}/${LabWork.value}`);
+      console.log(`http://localhost:3001/addLabWork/${Program.value}/${Discipline.value}/${LabWork.value == '' ? 'null' : LabWork.value}`);
+      fetch(`http://localhost:3001/addLabWork/${Program.value}/${Discipline.value}/${LabWork.value == '' ? 'null' : LabWork.value}`);
       onClose();
       window.location.reload();
     };
@@ -33,7 +34,7 @@ const PopupForm = ({ show, onClose }) => {
             </div>
             <div>
               <label>Lab work:</label>
-              <input type="text" id="add_lab_work" name="email" required />
+              <input type="text" id="add_lab_work" name="email"/>
             </div>
             <button type="submit">Submit</button>
           </form>

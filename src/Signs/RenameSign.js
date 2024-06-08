@@ -16,9 +16,6 @@ const PopupForm = ({ show, onClose }) => {
       const type_ = document.querySelector('input[name="rename_type"]:checked');
       const current_ = document.getElementById("current");
       const new_ = document.getElementById("new");
-      console.log(type_);
-      console.log(current_);
-      console.log(new_);
       fetch(`http://localhost:3001/rename/${type_.value}/${current_.value}/${new_.value}`, requestOptions);
       onClose();
       window.location.reload();

@@ -38,7 +38,8 @@ app.get('/getAllPrograms', (req, res) => {
 
 app.get('/getAllDisciplinesByProgramName/:ProgramName', (req, res) => {
   const ProgramName = "'" + req.params.ProgramName + "'";
-  const query = "SELECT DISTINCT D.name FROM LabWorksToEducationalProgramsAndDisciplines AS DTEP JOIN EducationalPrograms AS EP ON DTEP.educationalProgramId = EP.id JOIN Disciplines AS D ON DTEP.disciplineId = D.id WHERE EP.name = " + ProgramName + ";";
+  //const query = "SELECT DISTINCT D.name FROM LabWorksToEducationalProgramsAndDisciplines AS DTEP JOIN EducationalPrograms AS EP ON DTEP.educationalProgramId = EP.id JOIN Disciplines AS D ON DTEP.disciplineId = D.id WHERE EP.name = " + ProgramName + ";";
+  const query = "SELECT DISTINCT DTP.discipline_name FROM DisciplinesToProgram DTP JOIN educationalPrograms E ON DTP.program_name = E.name;";
   postgre.executeQuery(query).then(response => {
     res.status(200).send(response);
   })
@@ -78,12 +79,14 @@ app.get('/addLabWork/:ProgramName/:DisciplineName/:LabWorkName', (req, res) => {
   const LabWorkName = "'" + req.params.LabWorkName + "'";
   const ProgramId = ProgramName.hashCode();
   const DisciplineId =  DisciplineName.hashCode();
-  const LabWorkId = LabWorkName.hashCode();
+  const LabWorkId = req.params.LabWorkName == 'null' ? -1 : LabWorkName.hashCode();
+  const insert_into_disciplines_to_program = `INSERT INTO DisciplinesToProgram (discipline_name, program_name) VALUES (${DisciplineName}, ${ProgramName}) ON CONFLICT DO NOTHING;`;
   const insert_into_EducationalPrograms = "INSERT INTO EducationalPrograms (id, name) VALUES (" + ProgramId  + ", " + ProgramName + ") ON CONFLICT DO NOTHING;";
-  const insert_into_Disciplines = "INSERT INTO Disciplines (id, name) VALUES (" + DisciplineId + ", " + DisciplineName + ") ON CONFLICT DO NOTHING;";
-  const insert_into_LabWorkName = "INSERT INTO LabWorks (id, name) VALUES (" + LabWorkId + ", " + LabWorkName + ") ON CONFLICT DO NOTHING;";
-  const insert_into_LabWorksToEducationalProgramsAndDisciplines =  "INSERT INTO LabWorksToEducationalProgramsAndDisciplines (LabWorkId, EducationalProgramId, DisciplineId) VALUES " + `(${LabWorkId}, ${ProgramId}, ${DisciplineId}) ON CONFLICT DO NOTHING;`;
-  const query = insert_into_EducationalPrograms + insert_into_Disciplines + insert_into_LabWorkName +  insert_into_LabWorksToEducationalProgramsAndDisciplines;
+  const insert_into_Disciplines =  "INSERT INTO Disciplines (id, name) VALUES (" + DisciplineId + ", " + DisciplineName + ") ON CONFLICT DO NOTHING;";
+  const insert_into_LabWorkName = LabWorkId != -1 ? "INSERT INTO LabWorks (id, name) VALUES (" + LabWorkId + ", " + LabWorkName + ") ON CONFLICT DO NOTHING;" : "";
+  const insert_into_LabWorksToEducationalProgramsAndDisciplines = LabWorkId != -1 ? "INSERT INTO LabWorksToEducationalProgramsAndDisciplines (LabWorkId, EducationalProgramId, DisciplineId) VALUES " + `(${LabWorkId}, ${ProgramId}, ${DisciplineId}) ON CONFLICT DO NOTHING;` : '';
+  const query = insert_into_disciplines_to_program + insert_into_EducationalPrograms + insert_into_Disciplines + insert_into_LabWorkName +  insert_into_LabWorksToEducationalProgramsAndDisciplines;
+  console.log(query);
   postgre.executeQuery(query).then(response => {
     res.status(200).send(response);
   })
@@ -91,6 +94,8 @@ app.get('/addLabWork/:ProgramName/:DisciplineName/:LabWorkName', (req, res) => {
     res.status(500).send(error);
   })
 })
+
+
 
 app.get('/getLabContent/:Program/:Discipline/:LabWork', (req, res) => {
   const ProgramName      = "'" + req.params.Program    + "'";  
@@ -112,7 +117,6 @@ app.put('/updateHtmlContent/:Program/:Discipline/:LabWork', (req, res) => {
   const ProgramId = ProgramName.hashCode();
   const DisciplineId = DisciplineName.hashCode();
   const LabWorkId = LabWorkName.hashCode();
-  console.log(req.body.content);
   const query = `UPDATE LabWorksToEducationalProgramsAndDisciplines SET htmlcontent = '${req.body.content}' WHERE educationalprogramid = ${ProgramId} AND disciplineid = ${DisciplineId} AND labworkid = ${LabWorkId};`;
   postgre.executeQuery(query).then(response => {
     res.status(200).send(response);
@@ -135,7 +139,6 @@ app.put('/rename/:type_/:current_/:new_', (req, res) => {
   const new_hash_code = new_.hashCode();
   const query = `UPDATE ${tableNameToChange} SET id = ${new_hash_code}, name = ${new_} WHERE id = ${current_hash_code};`;
 
-  console.log(query);
   postgre.executeQuery(query).then(response => {
     res.status(200).send(response);
   })
