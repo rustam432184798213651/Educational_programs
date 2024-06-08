@@ -39,7 +39,7 @@ app.get('/getAllPrograms', (req, res) => {
 app.get('/getAllDisciplinesByProgramName/:ProgramName', (req, res) => {
   const ProgramName = "'" + req.params.ProgramName + "'";
   //const query = "SELECT DISTINCT D.name FROM LabWorksToEducationalProgramsAndDisciplines AS DTEP JOIN EducationalPrograms AS EP ON DTEP.educationalProgramId = EP.id JOIN Disciplines AS D ON DTEP.disciplineId = D.id WHERE EP.name = " + ProgramName + ";";
-  const query = "SELECT DISTINCT DTP.discipline_name FROM DisciplinesToProgram DTP JOIN educationalPrograms E ON DTP.program_name = E.name;";
+  const query = `SELECT DISTINCT DTP.discipline_name FROM DisciplinesToProgram DTP WHERE DTP.program_name=${ProgramName};`;
   postgre.executeQuery(query).then(response => {
     res.status(200).send(response);
   })
@@ -85,7 +85,7 @@ app.get('/addLabWork/:ProgramName/:DisciplineName/:LabWorkName', (req, res) => {
   const insert_into_Disciplines =  "INSERT INTO Disciplines (id, name) VALUES (" + DisciplineId + ", " + DisciplineName + ") ON CONFLICT DO NOTHING;";
   const insert_into_LabWorkName = LabWorkId != -1 ? "INSERT INTO LabWorks (id, name) VALUES (" + LabWorkId + ", " + LabWorkName + ") ON CONFLICT DO NOTHING;" : "";
   const insert_into_LabWorksToEducationalProgramsAndDisciplines = LabWorkId != -1 ? "INSERT INTO LabWorksToEducationalProgramsAndDisciplines (LabWorkId, EducationalProgramId, DisciplineId) VALUES " + `(${LabWorkId}, ${ProgramId}, ${DisciplineId}) ON CONFLICT DO NOTHING;` : '';
-  const query = insert_into_disciplines_to_program + insert_into_EducationalPrograms + insert_into_Disciplines + insert_into_LabWorkName +  insert_into_LabWorksToEducationalProgramsAndDisciplines;
+  const query =  insert_into_EducationalPrograms + insert_into_Disciplines + insert_into_LabWorkName +  insert_into_LabWorksToEducationalProgramsAndDisciplines + insert_into_disciplines_to_program;
   console.log(query);
   postgre.executeQuery(query).then(response => {
     res.status(200).send(response);
@@ -137,6 +137,7 @@ app.put('/rename/:type_/:current_/:new_', (req, res) => {
   const new_ = "'" + req.params.new_ + "'";
   const current_hash_code = current_.hashCode();
   const new_hash_code = new_.hashCode();
+  let additional_query = "";
   const query = `UPDATE ${tableNameToChange} SET id = ${new_hash_code}, name = ${new_} WHERE id = ${current_hash_code};`;
 
   postgre.executeQuery(query).then(response => {
