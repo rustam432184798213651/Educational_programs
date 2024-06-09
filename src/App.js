@@ -165,26 +165,38 @@ function App() {
     fileDownload.click();
     document.body.removeChild(fileDownload);
   }
-  function exportToPdf() {
-
-        var container = document.createElement("div");
-        var blocker = document.createElement("div");
-        blocker.style.backgroundColor = "white";
-        blocker.style.height = "100vh";
-        document.body.appendChild(blocker);
-        container.innerHTML = value;
-        document.body.appendChild(container);
-
-        const doc = new jsPDF("l", "pt", [1000, 1100]);
-        doc.html(container, {
-            callback: function (doc) {
-              doc.save('document2.pdf');
-              document.body.removeChild(blocker);
-              document.body.removeChild(container);
-            },
-            x: 10,
-            y: 10
-        });
+  async function exportToPdf() {
+    if(value.length > 0) {
+      await fetch('http://localhost:3001/download-pdf', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ html: value }),
+      })
+      .then((response) => response.blob())
+      .then((blob) => {
+        // Create blob link to download
+        const url = window.URL.createObjectURL(
+          new Blob([blob]),
+        );
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute(
+          'download',
+          `FileName.pdf`,
+        );
+    
+        // Append to html link element page
+        document.body.appendChild(link);
+    
+        // Start download
+        link.click();
+    
+        // Clean up and remove the link
+        link.parentNode.removeChild(link);
+      });
+    }
   }
   
   return <><div id="topPanel">  Educational programs </div>
