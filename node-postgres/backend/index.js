@@ -35,20 +35,19 @@ app.get('/test', (req, res)=> {
   let options = { format: 'A4' };
   // Example of options with args //
   // let options = { format: 'A4', args: ['--no-sandbox', '--disable-setuid-sandbox'] };
-  html_to_pdf.generatePdf(file, options)
-  .then((pdfBuffer) => {
-    // const base64String = pdfBuffer.toString('base64');
-    // const base64DataUri = 'data:application/pdf;base64,' + base64String;
-    fs.writeFile('output.pdf', pdfBuffer, (err) => {
+  res.attachment('output.pdf');
+  res.send("Something is going on here, but I am not sure what exactly");
+})
+const path = require('path');
+app.get('/download-pdf', (req, res) => {
+  const filePath = path.join(__dirname, 'output.pdf'); // Adjust the path to your PDF file
+  res.sendFile(filePath, err => {
       if (err) {
-          console.error('Error writing PDF file:', err);
-      } else {
-          console.log('PDF file created successfully.');
+          console.error('Error sending file:', err);
+          res.status(500).send('Error sending file');
       }
   });
-    res.status(200).send("Everything is alright, dude.");
-  });
-})
+});
 
 app.get('/getAllPrograms', (req, res) => {
   postgre.executeQuery("SELECT name FROM EducationalPrograms;").then(response => {
