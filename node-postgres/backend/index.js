@@ -28,18 +28,31 @@ app.use(function (req, res, next) {
   next();
 });
 
-app.get('/test', (req, res)=> {
+function create_pdf(w) {
   var html_to_pdf = require('html-pdf-node');
-  let file = { content: "<h1>Русский язык</h1>" };
-
+  let file = { content: w };
+  
   let options = { format: 'A4' };
   // Example of options with args //
   // let options = { format: 'A4', args: ['--no-sandbox', '--disable-setuid-sandbox'] };
-  res.attachment('output.pdf');
-  res.send("Something is going on here, but I am not sure what exactly");
-})
+  html_to_pdf.generatePdf(file, options)
+  .then((pdfBuffer) => {
+    // const base64String = pdfBuffer.toString('base64');
+    // const base64DataUri = 'data:application/pdf;base64,' + base64String;
+    fs.writeFile('output13.pdf', pdfBuffer, (err) => {
+      if (err) {
+          console.error('Error writing PDF file:', err);
+      } else {
+          console.log('PDF file created successfully.');
+      }
+  });
+  });
+}
+
 const path = require('path');
-app.get('/download-pdf', (req, res) => {
+app.post('/download-pdf', async (req, res) => {
+  const htmlContent = req.body.html;
+  create_pdf(htmlContent);
   const filePath = path.join(__dirname, 'output.pdf'); // Adjust the path to your PDF file
     res.set({
       'Content-Type': 'application/pdf', // Set the appropriate MIME type for the file
