@@ -41,6 +41,10 @@ app.get('/test', (req, res)=> {
 const path = require('path');
 app.get('/download-pdf', (req, res) => {
   const filePath = path.join(__dirname, 'output.pdf'); // Adjust the path to your PDF file
+    res.set({
+      'Content-Type': 'application/pdf', // Set the appropriate MIME type for the file
+      'Content-Disposition': 'attachment; filename="output.pdf"', // Force download with a suggested file name
+   });
   res.sendFile(filePath, err => {
       if (err) {
           console.error('Error sending file:', err);
