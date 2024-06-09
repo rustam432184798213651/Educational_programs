@@ -11,6 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.19.2",
+    "fs": "^0.0.1-security",
+    "html-pdf-node": "^1.0.8",
     "pg": "^8.11.5"
   }
 }

@@ -3,6 +3,7 @@ const app = express()
 const port = 3001
 const postgre = require('./database_interaction')
 const bodyParser = require('body-parser');
+const fs = require('fs');
 
 String.prototype.hashCode = function() {
   var hash = 0,
@@ -26,6 +27,28 @@ app.use(function (req, res, next) {
   );
   next();
 });
+
+app.get('/test', (req, res)=> {
+  var html_to_pdf = require('html-pdf-node');
+  let file = { content: "<h1>Русский язык</h1>" };
+
+  let options = { format: 'A4' };
+  // Example of options with args //
+  // let options = { format: 'A4', args: ['--no-sandbox', '--disable-setuid-sandbox'] };
+  html_to_pdf.generatePdf(file, options)
+  .then((pdfBuffer) => {
+    // const base64String = pdfBuffer.toString('base64');
+    // const base64DataUri = 'data:application/pdf;base64,' + base64String;
+    fs.writeFile('output.pdf', pdfBuffer, (err) => {
+      if (err) {
+          console.error('Error writing PDF file:', err);
+      } else {
+          console.log('PDF file created successfully.');
+      }
+  });
+    res.status(200).send("Everything is alright, dude.");
+  });
+})
 
 app.get('/getAllPrograms', (req, res) => {
   postgre.executeQuery("SELECT name FROM EducationalPrograms;").then(response => {
