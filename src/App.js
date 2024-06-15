@@ -166,7 +166,7 @@ function App() {
     document.body.removeChild(fileDownload);
   }
   async function exportToPdf() {
-    if(value.length > 0) {
+    if(value && value.length > 0) {
       await fetch('http://localhost:3001/download-pdf', {
         method: 'POST',
         headers: {

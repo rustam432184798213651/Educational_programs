@@ -31,7 +31,7 @@ app.use(function (req, res, next) {
 function create_pdf(w) {
   var html_to_pdf = require('html-pdf-node');
   let file = { content: w};
-  
+  // W - html content
   let options = { format: 'A4' };
   // Example of options with args //
   // let options = { format: 'A4', args: ['--no-sandbox', '--disable-setuid-sandbox'] };
@@ -90,11 +90,23 @@ app.get('/getAllDisciplinesByProgramName/:ProgramName', (req, res) => {
   })
 })
 
-app.get('/delete/:Program/:Discipline/:LabWork', (req, res) => {
+app.get('/delete/:Program/:Discipline', (req, res) => {
   const Program = "'" + req.params.Program + "'";
   const  Discipline = "'" + req.params.Discipline + "'";
-  const LabWork = "'" + req.params.LabWork + "'";
-  const query = "DELETE FROM LabWorksToEducationalProgramsAndDisciplines WHERE " + `EducationalProgramId = ${Program.hashCode()} AND DisciplineId = ${Discipline.hashCode()} AND LabWorkId = ${LabWork.hashCode()};`;
+  const query1 = `DELETE FROM disciplinestoprogram WHERE discipline_name = ${Discipline} AND program_name = ${Program};`;
+  const query2 = "DELETE FROM LabWorksToEducationalProgramsAndDisciplines WHERE " + `EducationalProgramId = ${Program.hashCode()} AND DisciplineId = ${Discipline.hashCode()};`;
+  const query = query1 + query2;
+  postgre.executeQuery(query).then(response => {
+    res.status(200).send(response);
+  })
+  .catch(error => {
+    res.status(500).send(error);
+  })
+})
+
+app.get('/delete/:Program', (req, res) => {
+  const Program = "'" + req.params.Program + "'";
+  const query = `DELETE FROM educationalprograms WHERE name = ${Program};`;
   postgre.executeQuery(query).then(response => {
     res.status(200).send(response);
   })

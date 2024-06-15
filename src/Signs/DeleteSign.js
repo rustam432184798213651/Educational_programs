@@ -11,8 +11,12 @@ const PopupForm = ({ show, onClose }) => {
       e.preventDefault();
       const Program = document.getElementById("delete_program");
       const Discipline = document.getElementById("delete_discipline");
-      const LabWork = document.getElementById("delete_lab_work");
-      fetch(`http://localhost:3001/delete/${Program.value}/${Discipline.value}/${LabWork.value}`);
+      if(Discipline.value) {
+        fetch(`http://localhost:3001/delete/${Program.value}/${Discipline.value}`);
+      }
+      else {
+        fetch(`http://localhost:3001/delete/${Program.value}`);
+      }
       onClose();
       window.location.reload();
     };
@@ -28,11 +32,7 @@ const PopupForm = ({ show, onClose }) => {
             </div>
             <div>
               <label>Discipline:</label>
-              <input type="text" id="delete_discipline" name="email" required />
-            </div>
-            <div>
-              <label>Lab work:</label>
-              <input type="text" id="delete_lab_work" name="email" required />
+              <input type="text" id="delete_discipline" name="email"/>
             </div>
             <button type="submit">Submit</button>
           </form>
