@@ -28,45 +28,53 @@ app.use(function (req, res, next) {
   next();
 });
 
-function create_pdf(w) {
-  var html_to_pdf = require('html-pdf-node');
-  let file = { content: w};
-  // W - html content
-  let options = { format: 'A4' };
-  // Example of options with args //
-  // let options = { format: 'A4', args: ['--no-sandbox', '--disable-setuid-sandbox'] };
-  html_to_pdf.generatePdf(file, options)
-  .then((pdfBuffer) => {
-    // const base64String = pdfBuffer.toString('base64');
-    // const base64DataUri = 'data:application/pdf;base64,' + base64String;
-    fs.writeFile('node-postgres/backend/output.pdf', pdfBuffer, (err) => {
-      if (err) {
-          console.error('Error writing PDF file:', err);
-      } else {
-          console.log('PDF file created successfully.');
-      }
-  });
-  });
+const create_pdf = async (w) => {
+  try{
+    var html_to_pdf = require('html-pdf-node');
+    let file = { content: w};
+    // W - html content
+    let options = { format: 'A4' };
+    // Example of options with args //
+    // let options = { format: 'A4', args: ['--no-sandbox', '--disable-setuid-sandbox'] };
+    html_to_pdf.generatePdf(file, options)
+    .then((pdfBuffer) => {
+      // const base64String = pdfBuffer.toString('base64');
+      // const base64DataUri = 'data:application/pdf;base64,' + base64String;
+      fs.writeFile('node-postgres/backend/output.pdf', pdfBuffer, (err) => {
+        if (err) {
+            console.error('Error writing PDF file:', err);
+        } else {
+            console.log('PDF file created successfully.');
+        }
+    });
+    });
+  }
+  catch(err) {
+    console.log("Error while writing PDF File:", err);
+  }
 }
 
 const path = require('path');
 app.post('/download-pdf', async (req, res) => {
-  const htmlContent = req.body.html;
-  create_pdf(htmlContent);
-  await new Promise(r => setTimeout(r, 5000));
-  const filename = 'output.pdf';
-  const filePath = path.join(__dirname, filename); // Adjust the path to your PDF file
-    res.set({
-      'Content-Type': 'application/pdf', // Set the appropriate MIME type for the file
-      'Content-Disposition': 'attachment; filename=' + filename, // Force download with a suggested file name
-  });
-  res.sendFile(filePath, err => {
-      if (err) {
-          console.error('Error sending file:', err);
-          res.status(500).send('Error sending file');
-      }
-  });
- 
+  try{
+    const htmlContent = req.body.html;
+    await create_pdf(htmlContent);
+    const filename = 'output.pdf';
+    const filePath = path.join(__dirname, filename); // Adjust the path to your PDF file
+      res.set({
+        'Content-Type': 'application/pdf', // Set the appropriate MIME type for the file
+        'Content-Disposition': 'attachment; filename=' + filename, // Force download with a suggested file name
+    });
+    res.sendFile(filePath, err => {
+        if (err) {
+            console.error('Error sending file:', err);
+            res.status(500).send('Error sending file');
+        }
+    });
+  }
+  catch (err) {
+    res.status(500).send('Error sending file');
+  }
 });
 
 app.get('/getAllPrograms', (req, res) => {
