@@ -141,14 +141,16 @@ function App() {
     
   }, []);
   function handler() {
-    const requestOptions = {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ content: value })
-  };
-  fetch(localhost + `/updateHtmlContent/${cProgram}/${cDiscipline}/${cLabWork}`, requestOptions)
-      .then(response => response.json())
-      .then(data => {});
+    if (value !== null) {
+      const requestOptions = {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: value })
+      };
+    fetch(localhost + `/updateHtmlContent/${cProgram}/${cDiscipline}/${cLabWork}`, requestOptions)
+        .then(response => response.json())
+        .then(data => {});
+    }
   }
   function exportToDocx() {
     var header = "<html xmlns:o='urn:schemas-microsoft-com:office:office' " + "xmlns:w='urn:schemas-microsoft-com:office:word' " + 

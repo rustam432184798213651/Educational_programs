@@ -11,16 +11,26 @@ const PopupForm = ({ show, onClose }) => {
       e.preventDefault();
       const Program = document.getElementById("delete_program");
       const Discipline = document.getElementById("delete_discipline");
-      if(Discipline.value) {
-        fetch(`http://localhost:3001/delete/${Program.value}/${Discipline.value}`);
+      const LabWork = document.getElementById("delete_labwork");
+      if(LabWork.value && !Discipline.value) {
+        alert("Введите название дисциплины, лабораторную работу которой хотите удалить.");
+        return;
       }
-      else {
-        fetch(`http://localhost:3001/delete/${Program.value}`);
+      else { 
+      if(Discipline.value && !LabWork.value) {
+          fetch(`http://localhost:3001/delete/${Program.value}/${Discipline.value}`);
+        }
+        else if (Discipline.value && LabWork.value) {
+          fetch(`http://localhost:3001/delete/${Program.value}/${Discipline.value}/${LabWork.value}`);
+        }
+        else {
+          fetch(`http://localhost:3001/delete/${Program.value}`);
+        }
+        onClose();
+        window.location.reload();
       }
-      onClose();
-      window.location.reload();
     };
-  
+    
     return ReactDOM.createPortal(
       <div className="popup-overlay">
         <div className="popup-form">
@@ -33,6 +43,10 @@ const PopupForm = ({ show, onClose }) => {
             <div>
               <label>Discipline:</label>
               <input type="text" id="delete_discipline" name="email"/>
+            </div>
+            <div>
+              <label>Labwork:</label>
+              <input type="text" id="delete_labwork" name="email"/>
             </div>
             <button type="submit">Submit</button>
           </form>
