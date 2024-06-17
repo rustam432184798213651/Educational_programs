@@ -201,7 +201,7 @@ function App() {
     }
   }
   
-  return <><div id="topPanel">  Educational programs </div>
+  return <><div id="topPanel">  Образовательные программы </div>
   <div style={{  display: "flex", justifyContent: "space-between"}}>
     <div>
       <SearchAndDeleteTab key="foeroifjer"  program={cProgram} discipline={cDiscipline} labWork={cLabWork} value={value} handler={handler} exportToDocx={exportToDocx} exportToPdf={exportToPdf}/>

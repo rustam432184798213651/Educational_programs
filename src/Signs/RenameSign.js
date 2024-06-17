@@ -27,23 +27,23 @@ const PopupForm = ({ show, onClose }) => {
           <button className="close-button" onClick={onClose}>X</button>
           <form id="insertForm" onSubmit={handleSubmit}>
             <div>
-                <label>What type:</label>
+                <label>Тип:</label>
                 <input type="radio" id="Program" name="rename_type" value="Program" checked/>
-                <label for="Program">Program</label>
+                <label for="Program">Программа</label>
                 <input type="radio" id="Discipline" name="rename_type" value="Discipline"/>
-                <label for="Discipline">Discipline</label>
+                <label for="Discipline">Дисциплина</label>
                 <input type="radio" id="LabWork" name="rename_type" value="LabWork"/>
-                <label for="LabWork">LabWork</label>
+                <label for="LabWork">Лабораторная работа</label>
             </div>
             <div>
-              <label>Current name:</label>
+              <label>Текущее имя:</label>
               <input type="text" id="current"  required />
             </div>
             <div>
-              <label>New name:</label>
+              <label>Новое имя:</label>
               <input type="text" id="new"  required />
             </div>
-            <button type="submit">Submit</button>
+            <button type="submit">Отправить</button>
           </form>
         </div>
       </div>,

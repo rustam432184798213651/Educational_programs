@@ -25,18 +25,18 @@ const PopupForm = ({ show, onClose }) => {
           <button className="close-button" onClick={onClose}>X</button>
           <form id="insertForm" onSubmit={handleSubmit}>
             <div>
-              <label>Program:</label>
+              <label>Программа:</label>
               <input type="text" id="add_program" name="name" required />
             </div>
             <div>
-              <label>Discipline:</label>
+              <label>Дисциплина:</label>
               <input type="text" id="add_discipline" name="email" required />
             </div>
             <div>
-              <label>Lab work:</label>
+              <label>Лабораторная работа:</label>
               <input type="text" id="add_lab_work" name="email"/>
             </div>
-            <button type="submit">Submit</button>
+            <button type="submit">Отправить</button>
           </form>
         </div>
       </div>,
