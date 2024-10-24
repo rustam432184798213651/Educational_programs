@@ -1,5 +1,7 @@
 # Launch of app in root directory
 npm install -g nodemon \
-npm install -g pg express \
-nodemon node-postgres/backend/index.js \
-npm start
+npm install pg --save \
+npm install express --save \
+nodemon node-postgres/backend/index.js 
+# In a new console enter
+npm start 
