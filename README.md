@@ -1,3 +1,4 @@
+# You need to have pgAdmin installed and you also need to set database-related variables in index.js file at the very top
 # Launch of app in root directory
 npm install -g nodemon \
 npm install pg --save \
